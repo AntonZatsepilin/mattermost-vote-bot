@@ -38,6 +38,52 @@ services:
       retries: 5
     networks:
       - app-network
+  mattermost:
+    image: mattermost/mattermost-team-edition
+    container_name: mattermost-vote-mm
+    environment:
+      MM_SQLSETTINGS_DRIVERNAME: postgres
+      MM_SQLSETTINGS_DATASOURCE: postgres://mmuser:mmuser_password@postgres:5432/mattermost?sslmode=disable&connect_timeout=10
+      MM_SERVICESETTINGS_SITEURL: http://localhost:8065
+    ports:
+      - "8065:8065"
+      - "8067:8067"
+    networks:
+      - app-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - mattermost_data:/mattermost/data
+      - mattermost_config:/mattermost/config
+      - mattermost_logs:/mattermost/logs
+
+  postgres:
+    image: postgres:13
+    container_name: mattermost-vote-pg
+    environment:
+      POSTGRES_USER: mmuser
+      POSTGRES_PASSWORD: mmuser_password
+      POSTGRES_DB: mattermost
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mmuser -d mattermost"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  mattermost_data:
+    driver: local
+  mattermost_config:
+    driver: local
+  mattermost_logs:
+    driver: local

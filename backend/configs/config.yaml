@@ -1,0 +1,5 @@
+port: "8080"
+tarantool:
+  address: "kv-storage-db:3301"
+  port: "3301"
+  timeout: 5

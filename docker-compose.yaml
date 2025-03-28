@@ -19,7 +19,7 @@ services:
       - app-network
 
   tarantool:
-    container_name: kv-storage-db
+    container_name: mattermost-vote-db
     image: tarantool/tarantool:2.11.0
     volumes:
       - ./init.lua:/opt/tarantool/init.lua

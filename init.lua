@@ -10,7 +10,7 @@ box.schema.space.create('polls', {
         {name = 'id', type = 'string'},
         {name = 'creator', type = 'string'},
         {name = 'question', type = 'string'},
-        {name = 'options', type: 'map'},
+        {name = 'options', type = 'map'},
         {name = 'status', type = 'string'},
         {name = 'created_at', type = 'unsigned'}
     }
@@ -35,3 +35,9 @@ box.space.votes:create_index('primary', {
     parts = {'poll_id', 'user_id'},
     if_not_exists = true
 })
+
+local username = os.getenv("TARANTOOL_USER_NAME") or "default_user"
+local password = os.getenv("TARANTOOL_USER_PASSWORD") or "default_password"
+
+box.schema.user.create(username, {password = password, if_not_exists = true})
+box.schema.user.grant(username, 'read,write,execute', 'universe', nil, {if_not_exists = true})
